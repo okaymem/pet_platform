@@ -1,0 +1,12 @@
+{
+  "name": "pet-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {},
+  "description": "",
+  "license": "MIT"
+}
