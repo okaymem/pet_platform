@@ -1,0 +1,13 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "@types/telegram-web-app": "^9.6.0",
+    "typescript": "^5.0.0",
+    "vite": "^7.0.0"
+  }
+}

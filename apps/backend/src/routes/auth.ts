@@ -5,7 +5,7 @@ import {
   createSessionToken,
   hashSessionToken,
 } from "../lib/session.js";
-
+import {authMiddleware} from "../middleware/auth.js"
 const router = Router();
 
 router.post("/telegram", async (req, res) => {
@@ -18,7 +18,6 @@ router.post("/telegram", async (req, res) => {
   }
 
   const telegramUser = validateTelegramInitData(initData);
-
   if (!telegramUser?.id) {
     return res.status(401).json({
       error: "Invalid Telegram initData",
@@ -26,14 +25,21 @@ router.post("/telegram", async (req, res) => {
   }
 
   const user = await prisma.user.upsert({
-    where: {
-      telegramId: telegramUser.id.toString(),
-    },
-    update: {},
-    create: {
-      telegramId: telegramUser.id.toString(),
-    },
-  });
+  where: {
+    telegramId: telegramUser.id.toString(),
+  },
+  update: {
+    username: telegramUser.username ?? null,
+    firstName: telegramUser.first_name,
+    lastName: telegramUser.last_name ?? null,
+  },
+  create: {
+    telegramId: telegramUser.id.toString(),
+    username: telegramUser.username ?? null,
+    firstName: telegramUser.first_name,
+    lastName: telegramUser.last_name ?? null,
+  },
+});
 
   const sessionToken = createSessionToken();
   const tokenHash = hashSessionToken(sessionToken);
@@ -47,14 +53,33 @@ router.post("/telegram", async (req, res) => {
   });
 
   res.cookie("session", sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-  });
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  maxAge: 1000 * 60 * 60 * 24 * 30,
+});
+
 
   return res.status(200).json({
     message: "Authenticated",
+  });
+});
+
+router.get("/me", authMiddleware, async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.user!.id,
+    },
+  });
+
+  if (!user) {
+    return res.status(404).json({
+      error: "User not found",
+    });
+  }
+
+  res.json({
+    user,
   });
 });
 
