@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
-
+import tailwindcss from "@tailwindcss/vite";
 
 
 export default defineConfig({
+  plugins:[tailwindcss()],
   server: {
-    allowedHosts: ["enabled-dry-sudden-read.trycloudflare.com"],
+    allowedHosts: ["clearing-manner-bacon-million.trycloudflare.com"],
     proxy: {
       "/api": {
         target: "http://localhost:3000",
@@ -13,4 +14,4 @@ export default defineConfig({
       },
     },
   },
-});
+}); 
