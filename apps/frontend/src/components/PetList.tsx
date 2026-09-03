@@ -4,8 +4,7 @@ import PetCard from "./PetCard";
 type PetListProps = {
   pets: Pet[];
   onAddPet: () => void;
-  onPetClick: (pet: Pet) => void;
-
+  onPetClick: (pet: Pet) =>void;
 };
 
 function PetList({ pets, onAddPet, onPetClick }: PetListProps) {

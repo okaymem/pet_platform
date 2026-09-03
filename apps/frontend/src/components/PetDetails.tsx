@@ -1,10 +1,10 @@
-import { useState } from "react";
-import type { Pet } from "../api/pets";
+import { useState, useEffect } from "react";
 import {
   updatePet,
   uploadPetPhoto,
+  type Pet
 } from "../api/pets";
-
+import PetEvents from "./PetEvents";
 type PetDetailsProps = {
   pet: Pet;
   onBack: () => void;
@@ -40,7 +40,6 @@ function PetDetails({
 
   const [photoVersion, setPhotoVersion] =
     useState(0);
-
   function startEditing(
     field: Exclude<EditingField, null>,
   ) {
@@ -522,6 +521,7 @@ function PetDetails({
           )}
         </div>
       </div>
+      <PetEvents petId={pet.id} />
     </section>
   );
 }

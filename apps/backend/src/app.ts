@@ -2,6 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import petsRouter from "./routes/pets.js";
 import authRouter from "./routes/auth.js";
+import eventRouter from "./routes/events.js";
+
 import cors from "cors";
 const app = express();
 
@@ -16,6 +18,7 @@ app.use(
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
+app.use("/pets", eventRouter);
 
 app.use("/pets", petsRouter);
 

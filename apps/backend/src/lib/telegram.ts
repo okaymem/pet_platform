@@ -36,7 +36,6 @@ export function validateTelegramInitData(initData: string) {
   }
 
   const authDate = Number(params.get("auth_date"));
-console.log(authDate)
 
   if (!authDate) {
     return null;

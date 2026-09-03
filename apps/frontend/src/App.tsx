@@ -20,7 +20,7 @@ function App() {
 const [pets, setPets] = useState<Pet[]>([]);
 const [currentPage, setCurrentPage] = useState<Page>("profile");
 const [isCreatingPet, setIsCreatingPet] = useState(false);
-   
+
 useEffect(() => {
     async function initializeApp() {
       try {
@@ -68,7 +68,9 @@ useEffect(() => {
   <PetList
     pets={pets}
     onAddPet={() => setIsCreatingPet(true)}
-    onPetClick={(pet) => setSelectedPet(pet)}
+    onPetClick={(pet) => {
+      setSelectedPet(pet)
+     }}
   />
 )}
 
@@ -103,7 +105,7 @@ useEffect(() => {
       )}
     </div>
 
-    {!isCreatingPet && (
+    {(!isCreatingPet && !selectedPet) && (
       <BottomNav
         currentPage={currentPage}
         onPageChange={setCurrentPage}

@@ -7,13 +7,10 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-console.log("COOKIE HEADER:", req.headers.cookie ?? "NO COOKIE");
   const sessionToken = req.cookies.session;
 
-console.log("SESSION COOKIE:", !!sessionToken);
 
 if (!sessionToken) {
-  console.log("❌ NO SESSION COOKIE");
 
   return res.status(401).json({
     error: "Unauthorized",
@@ -28,7 +25,6 @@ const session = await prisma.session.findUnique({
   },
 });
 
-console.log("SESSION FOUND:", !!session);
 
 if (!session || session.expiresAt < new Date()) {
   return res.status(401).json({
