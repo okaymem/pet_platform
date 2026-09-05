@@ -5,22 +5,26 @@ type Page = "profile" | "pets";
 import Profile from "./components/Profile";
 import PetDetails from "./components/PetDetails";
 import CreatePet from "./components/CreatePet";
+import { usePetStore } from "./store/petStore";
 import {
   authenticateWithTelegram,
   getMe,
   type User,
 } from "./api/auth";
-import { getPets, type Pet } from "./api/pets";
+import { getPets} from "./api/pets";
 
 function App() {
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-const [pets, setPets] = useState<Pet[]>([]);
 const [currentPage, setCurrentPage] = useState<Page>("profile");
 const [isCreatingPet, setIsCreatingPet] = useState(false);
+const updatePet = usePetStore((state) => state.updatePet);
+const pets = usePetStore((state) => state.pets);
+const selectedPet = usePetStore((state) => state.selectedPet);
 
+const setPets = usePetStore((state) => state.setPets);
+const setSelectedPet = usePetStore((state) => state.setSelectedPet);
 useEffect(() => {
     async function initializeApp() {
       try {
@@ -78,24 +82,14 @@ useEffect(() => {
   <PetDetails
     pet={selectedPet}
     onBack={() => setSelectedPet(null)}
-    onPetUpdated={(updatedPet) => {
-    setSelectedPet(updatedPet);
-
-    setPets((current) =>
-      current.map((pet) =>
-        pet.id === updatedPet.id
-          ? updatedPet
-          : pet,
-      ),
-    );
-  }}
+    onPetUpdated={updatePet}
   />
 )}
 
       {currentPage === "pets" && isCreatingPet && (
         <CreatePet
           onCancel={() => setIsCreatingPet(false)}
-          onPetCreated={async (pet) => {
+          onPetCreated={async () => {
             const currentPets = await getPets();
 
             setPets(currentPets);

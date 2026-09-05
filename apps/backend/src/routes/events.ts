@@ -5,6 +5,7 @@ import {
   createPetSchema,
   updatePetSchema,
 } from "../schemas/pet.schema.js";
+import { getNextScheduledAt } from "../services/reccurringEvents";
 const router = Router();
 
 router.get("/:petId/events", authMiddleware, async (req, res) => {
@@ -40,7 +41,6 @@ router.get("/:petId/events", authMiddleware, async (req, res) => {
       scheduledAt: "asc",
     },
   });
-
   return res.json(events);
 });
 
@@ -214,38 +214,7 @@ router.patch(
       event.interval &&
       event.intervalUnit
     ) {
-      const nextScheduledAt =
-        new Date(event.scheduledAt);
-
-      switch (event.intervalUnit) {
-        case "day":
-          nextScheduledAt.setDate(
-            nextScheduledAt.getDate() +
-              event.interval,
-          );
-          break;
-
-        case "week":
-          nextScheduledAt.setDate(
-            nextScheduledAt.getDate() +
-              event.interval * 7,
-          );
-          break;
-
-        case "month":
-          nextScheduledAt.setMonth(
-            nextScheduledAt.getMonth() +
-              event.interval,
-          );
-          break;
-
-        case "year":
-          nextScheduledAt.setFullYear(
-            nextScheduledAt.getFullYear() +
-              event.interval,
-          );
-          break;
-      }
+      const nextScheduledAt = getNextScheduledAt(event.scheduledAt, event.interval, event.intervalUnit)
 
       await prisma.petEvent.create({
         data: {
