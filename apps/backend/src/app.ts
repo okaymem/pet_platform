@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://blair-crystal-jenny-regarded.trycloudflare.com",
+    origin: "https://fulfilling-transformation-production.up.railway.app",
     credentials: true,
   })
 );
