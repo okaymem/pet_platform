@@ -18,9 +18,9 @@ app.use(
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
-app.use("/pets", eventRouter);
+app.use("/api/pets", eventRouter);
 
-app.use("/pets", petsRouter);
+app.use("/api/pets", petsRouter);
 
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 export default app;
