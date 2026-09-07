@@ -13,6 +13,8 @@ app.use(
   cors({
     origin: "https://fulfilling-transformation-production.up.railway.app",
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 app.get("/health", (_req, res) => {
