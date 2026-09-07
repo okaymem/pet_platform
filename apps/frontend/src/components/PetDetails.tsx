@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiFetch } from "../api/client";
 import {
   updatePet,
   uploadPetPhoto,
@@ -30,6 +31,7 @@ function PetDetails({
   onBack,
   onPetUpdated,
 }: PetDetailsProps) {
+  
   const [editingField, setEditingField] =
     useState<EditingField>(null);
 
@@ -40,6 +42,41 @@ function PetDetails({
 
   const [photoVersion, setPhotoVersion] =
     useState(0);
+    const [photoUrl, setPhotoUrl] =
+  useState<string | null>(null);
+
+ useEffect(() => {
+  if (!pet.photoType) {
+    setPhotoUrl(null);
+    return;
+  }
+
+  let objectUrl: string | null = null;
+
+  async function loadPhoto() {
+    const response = await apiFetch(
+      `/api/pets/${pet.id}/photo?v=${photoVersion}`,
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
+    const blob = await response.blob();
+
+    objectUrl = URL.createObjectURL(blob);
+    setPhotoUrl(objectUrl);
+  }
+
+  void loadPhoto();
+
+  return () => {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+    }
+  };
+}, [pet.id, pet.photoType, photoVersion]);
+
   function startEditing(
     field: Exclude<EditingField, null>,
   ) {
@@ -424,14 +461,14 @@ function PetDetails({
           >
             <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-5xl">
               {pet.photoType ? (
-                <img
-                  src={`/api/pets/${pet.id}/photo?v=${photoVersion}`}
-                  alt={pet.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                "🐾"
-              )}
+  <img
+    src={photoUrl ?? undefined}
+    alt={pet.name}
+    className="h-full w-full object-cover"
+  />
+) : (
+  "🐾"
+)}
             </div>
 
             <input
