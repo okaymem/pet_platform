@@ -55,7 +55,7 @@ router.post("/telegram", async (req, res) => {
   res.cookie("session", sessionToken, {
   httpOnly: true,
   secure: true,
-  sameSite: "lax",
+  sameSite: "none",
   maxAge: 1000 * 60 * 60 * 24 * 30,
 });
 
