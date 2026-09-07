@@ -7,6 +7,7 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
+  console.log("SESSION COOKIE:", req.cookies.session ? "PRESENT" : "MISSING");
   const sessionToken = req.cookies.session;
 
 
