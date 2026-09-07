@@ -1,3 +1,5 @@
+import { apiUrl } from "./client";
+
 export type User = {
   id: number;
   username: string | null;
@@ -9,7 +11,7 @@ type MeResponse = {
 };
 
 export async function authenticateWithTelegram(initData: string) {
-  const response = await fetch("/api/auth/telegram", {
+  const response = await fetch(apiUrl("/api/auth/telegram"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -26,7 +28,7 @@ export async function authenticateWithTelegram(initData: string) {
 }
 
 export async function getMe(): Promise<User> {
-  const response = await fetch("/api/auth/me", {
+  const response = await fetch(apiUrl("/api/auth/me"), {
     credentials: "include",
   });
 

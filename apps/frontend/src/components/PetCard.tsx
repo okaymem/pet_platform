@@ -1,5 +1,5 @@
 import type { Pet } from "../api/pets";
-
+import { apiUrl } from "../api/client";
 type PetCardProps = {
   pet: Pet;
   onPetClick: (pet: Pet) => void;
@@ -17,7 +17,7 @@ function PetCard({ pet, onPetClick }: PetCardProps) {
           <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-2xl">
             {pet.photoType ? (
               <img
-                src={ `/api/pets/${pet.id}/photo`}
+                src={apiUrl(`/api/pets/${pet.id}/photo`)}
                 alt={pet.name}
                 className="h-full w-full object-cover"
               />

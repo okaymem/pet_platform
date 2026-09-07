@@ -1,3 +1,5 @@
+import { apiUrl } from "./client";
+
 export type Pet = {
   id: string;
   ownerId: string;
@@ -15,7 +17,7 @@ export type Pet = {
 };
 
 export async function getPets(): Promise<Pet[]> {
-  const response = await fetch("/api/pets", {
+  const response = await fetch(apiUrl("/api/pets"), {
     credentials: "include",
   });
 
@@ -23,9 +25,7 @@ export async function getPets(): Promise<Pet[]> {
     throw new Error("Failed to load pets");
   }
 
-  const pets: Pet[] = await response.json();
-
-  return pets;
+  return response.json();
 }
 
 export async function createPet(data: {
@@ -37,7 +37,7 @@ export async function createPet(data: {
   weight?: number;
   description?: string;
 }): Promise<Pet> {
-  const response = await fetch("/api/pets", {
+  const response = await fetch(apiUrl("/api/pets"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,7 +53,6 @@ export async function createPet(data: {
   return response.json();
 }
 
-
 export async function uploadPetPhoto(
   petId: string,
   photo: File,
@@ -62,11 +61,14 @@ export async function uploadPetPhoto(
 
   formData.append("photo", photo);
 
-  const response = await fetch(`/api/pets/${petId}/photo`, {
-    method: "POST",
-    credentials: "include",
-    body: formData,
-  });
+  const response = await fetch(
+    apiUrl(`/api/pets/${petId}/photo`),
+    {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    },
+  );
 
   if (!response.ok) {
     throw new Error("Failed to upload pet photo");
@@ -85,14 +87,17 @@ export async function updatePet(
     description?: string;
   },
 ): Promise<Pet> {
-  const response = await fetch(`/api/pets/${petId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    apiUrl(`/api/pets/${petId}`),
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
     },
-    credentials: "include",
-    body: JSON.stringify(data),
-  });
+  );
 
   if (!response.ok) {
     const message = await response.text();
