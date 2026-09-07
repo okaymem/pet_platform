@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../lib/prisma.js";
 import { hashSessionToken } from "../lib/session.js";
 
@@ -7,35 +7,37 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  console.log("SESSION COOKIE:", req.cookies.session ? "PRESENT" : "MISSING");
-  const sessionToken = req.cookies.session;
+  const authorization = req.headers.authorization;
 
+  let sessionToken: string | undefined;
 
-if (!sessionToken) {
+  if (authorization?.startsWith("Bearer ")) {
+    sessionToken = authorization.slice("Bearer ".length);
+  }
 
-  return res.status(401).json({
-    error: "Unauthorized",
+  if (!sessionToken) {
+    sessionToken = req.cookies.session;
+  }
+
+  if (!sessionToken) {
+    return res.status(401).json({
+      error: "Unauthorized",
+    });
+  }
+
+  const tokenHash = hashSessionToken(sessionToken);
+
+  const session = await prisma.session.findUnique({
+    where: { tokenHash },
   });
-}
 
-const tokenHash = hashSessionToken(sessionToken);
+  if (!session || session.expiresAt < new Date()) {
+    return res.status(401).json({
+      error: "Unauthorized",
+    });
+  }
 
-const session = await prisma.session.findUnique({
-  where: {
-    tokenHash,
-  },
-});
-
-
-if (!session || session.expiresAt < new Date()) {
-  return res.status(401).json({
-    error: "Unauthorized",
-  });
-}
-
-  req.user = {
-    id: session.userId,
-  };
+  req.user = { id: session.userId };
 
   next();
 }

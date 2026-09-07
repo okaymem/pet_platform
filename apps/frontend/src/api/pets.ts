@@ -1,4 +1,4 @@
-import { apiUrl } from "./client";
+import { apiFetch } from "./client";
 
 export type Pet = {
   id: string;
@@ -17,9 +17,7 @@ export type Pet = {
 };
 
 export async function getPets(): Promise<Pet[]> {
-  const response = await fetch(apiUrl("/api/pets"), {
-    credentials: "include",
-  });
+  const response = await apiFetch("/api/pets");
 
   if (!response.ok) {
     throw new Error("Failed to load pets");
@@ -37,12 +35,11 @@ export async function createPet(data: {
   weight?: number;
   description?: string;
 }): Promise<Pet> {
-  const response = await fetch(apiUrl("/api/pets"), {
+  const response = await apiFetch("/api/pets", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -61,14 +58,10 @@ export async function uploadPetPhoto(
 
   formData.append("photo", photo);
 
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}/photo`),
-    {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    },
-  );
+  const response = await apiFetch(`/api/pets/${petId}/photo`, {
+    method: "POST",
+    body: formData,
+  });
 
   if (!response.ok) {
     throw new Error("Failed to upload pet photo");
@@ -87,17 +80,13 @@ export async function updatePet(
     description?: string;
   },
 ): Promise<Pet> {
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}`),
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
+  const response = await apiFetch(`/api/pets/${petId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(data),
+  });
 
   if (!response.ok) {
     const message = await response.text();

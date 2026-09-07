@@ -1,4 +1,4 @@
-import { apiUrl } from "./client";
+import { apiFetch } from "./client";
 
 export type PetEvent = {
   id: string;
@@ -18,11 +18,8 @@ export type PetEvent = {
 export async function getPetEvents(
   petId: string,
 ): Promise<PetEvent[]> {
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}/events`),
-    {
-      credentials: "include",
-    },
+  const response = await apiFetch(
+    `/api/pets/${petId}/events`,
   );
 
   if (!response.ok) {
@@ -45,14 +42,13 @@ export async function createPetEvent(
     notes?: string;
   },
 ): Promise<PetEvent> {
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}/events`),
+  const response = await apiFetch(
+    `/api/pets/${petId}/events`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",
       body: JSON.stringify(data),
     },
   );
@@ -68,11 +64,10 @@ export async function completePetEvent(
   petId: string,
   eventId: string,
 ): Promise<PetEvent> {
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}/events/${eventId}/complete`),
+  const response = await apiFetch(
+    `/api/pets/${petId}/events/${eventId}/complete`,
     {
       method: "PATCH",
-      credentials: "include",
     },
   );
 
@@ -87,11 +82,10 @@ export async function deletePetEvent(
   petId: string,
   eventId: string,
 ): Promise<void> {
-  const response = await fetch(
-    apiUrl(`/api/pets/${petId}/events/${eventId}`),
+  const response = await apiFetch(
+    `/api/pets/${petId}/events/${eventId}`,
     {
       method: "DELETE",
-      credentials: "include",
     },
   );
 

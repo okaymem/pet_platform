@@ -52,17 +52,10 @@ router.post("/telegram", async (req, res) => {
     },
   });
 
-  res.cookie("session", sessionToken, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 1000 * 60 * 60 * 24 * 30,
-});
-
-
   return res.status(200).json({
-    message: "Authenticated",
-  });
+  message: "Authenticated",
+  token: sessionToken,
+});
 });
 
 router.get("/me", authMiddleware, async (req, res) => {

@@ -1,11 +1,47 @@
+import { useEffect, useState } from "react";
 import type { Pet } from "../api/pets";
-import { apiUrl } from "../api/client";
+import { apiFetch } from "../api/client";
+
 type PetCardProps = {
   pet: Pet;
   onPetClick: (pet: Pet) => void;
 };
 
 function PetCard({ pet, onPetClick }: PetCardProps) {
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!pet.photoType) {
+      setPhotoUrl(null);
+      return;
+    }
+
+    let objectUrl: string | null = null;
+
+    async function loadPhoto() {
+      const response = await apiFetch(
+        `/api/pets/${pet.id}/photo`,
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const blob = await response.blob();
+
+      objectUrl = URL.createObjectURL(blob);
+      setPhotoUrl(objectUrl);
+    }
+
+    loadPhoto();
+
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [pet.id, pet.photoType]);
+
   return (
     <button
       type="button"
@@ -15,9 +51,9 @@ function PetCard({ pet, onPetClick }: PetCardProps) {
       <article className="rounded-2xl bg-white p-4 shadow-sm transition active:scale-[0.98]">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-2xl">
-            {pet.photoType ? (
+            {photoUrl ? (
               <img
-                src={apiUrl(`/api/pets/${pet.id}/photo`)}
+                src={photoUrl}
                 alt={pet.name}
                 className="h-full w-full object-cover"
               />

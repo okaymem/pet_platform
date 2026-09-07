@@ -1,7 +1,7 @@
-import { apiUrl } from "./client";
+import { apiFetch, apiUrl, setSessionToken } from "./client";
 
 export type User = {
-  id: number;
+  id: string;
   username: string | null;
   firstName: string;
 };
@@ -16,21 +16,20 @@ export async function authenticateWithTelegram(initData: string) {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
-    body: JSON.stringify({
-      initData,
-    }),
+    body: JSON.stringify({ initData }),
   });
 
   if (!response.ok) {
     throw new Error("Telegram authentication failed");
   }
+
+  const data: { token: string } = await response.json();
+
+  setSessionToken(data.token);
 }
 
 export async function getMe(): Promise<User> {
-  const response = await fetch(apiUrl("/api/auth/me"), {
-    credentials: "include",
-  });
+  const response = await apiFetch("/api/auth/me");
 
   if (!response.ok) {
     throw new Error("Failed to load user");
